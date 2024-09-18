@@ -1,0 +1,29 @@
+workbooks:
+  - name: русский язык.xlsx
+    worksheets:
+      - name: 4 класс
+        point_range: C3:V4
+      - name: 5 класс
+        point_range: C3:W9
+      - name: 6 класс
+        point_range: C3:O9
+      - name: 7 класс
+        point_range: C3:R9
+      - name: 8 класс
+        point_range: C3:U5
+  - name: география.xlsx
+    worksheets:
+      - name: 8 класс
+        point_range: C3:T5
+  - name: математика.xlsx
+    worksheets:
+      - name: 4 класс
+        point_range: C3:Q4
+      - name: 5 класс
+        point_range: C3:N11
+      - name: 6 класс
+        point_range: C3:O9
+      - name: 7 класс
+        point_range: C3:R9
+      - name: 8 класс
+        point_range: C3:U5

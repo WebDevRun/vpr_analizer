@@ -1,0 +1,5 @@
+tables/*
+config/*
+**/__pycache__
+venv
+.venv
