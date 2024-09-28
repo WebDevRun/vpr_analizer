@@ -11,10 +11,6 @@ workbooks:
         point_range: C3:R9
       - name: 8 класс
         point_range: C3:U5
-  - name: география.xlsx
-    worksheets:
-      - name: 8 класс
-        point_range: C3:T5
   - name: математика.xlsx
     worksheets:
       - name: 4 класс

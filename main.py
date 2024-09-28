@@ -6,6 +6,8 @@ from yaml import safe_load
 
 from argparser import ArgParser
 from openpyxl_worker import RangeConverter, TableWorker
+from openpyxl_worker.overall_results_worker import OverallResultsWorker
+from openpyxl_worker.types import WorksheetRanges
 from yaml_worker import YamlWorker
 from yaml_worker.types import WorkbookRanges, WorkbooksRanges, WorksheetStrRanges
 
@@ -20,6 +22,7 @@ class Sentences(StrEnum):
     create_table = "Создана таблица:"
     save_table = "Сохранена таблица:"
     press_to_close = "Нажмите Enter для закрытия..."
+    overall_results = "Общие результаты"
 
 
 def main():
@@ -59,6 +62,7 @@ def main():
     for wb in workbooks:
         table_path = Path(Directory.tables.value, wb.name)
         table_worker = TableWorker(table_path)
+        wb_ranges: List[WorksheetRanges] = []
         worksheet_list: List[WorksheetStrRanges] = []
 
         for ws in wb.worksheets:
@@ -67,6 +71,7 @@ def main():
                 .replace_x_cells(ws.point_range)
                 .fill_theme_table(ws.point_range)
             )
+            wb_ranges.append(worksheet_ranges)
             worksheet_str_ranges = RangeConverter(table_worker.ws).ranges_to_str(
                 worksheet_ranges
             )
@@ -74,6 +79,14 @@ def main():
             print(f"{Sentences.create_table.value} {wb.name} - {ws.name}")
 
         workbook_list.append(WorkbookRanges(wb.name, worksheet_list))
+
+        OverallResultsWorker(
+            table_worker.wb, Sentences.overall_results.value
+        ).fill_table(wb_ranges)
+        print(
+            f"{Sentences.create_table.value} {wb.name} - {Sentences.overall_results.value}"
+        )
+
         table_worker.save_table(table_path)
         print(f"{Sentences.save_table.value} {table_path}")
 

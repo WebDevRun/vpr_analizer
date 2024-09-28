@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Literal, NamedTuple, Tuple
+from typing import List, Literal, NamedTuple, Tuple
 
 from openpyxl.cell.cell import Cell
 
-MatrixCells = Tuple[Tuple[Cell, ...], ...]
 LineCells = Tuple[Cell, ...]
+MatrixCells = Tuple[LineCells, ...]
 
 
 class NumberFormatCell(Enum):
@@ -14,11 +14,19 @@ class NumberFormatCell(Enum):
     NONE = None
 
 
-class FirstTableHeader(NamedTuple):
+class TableHeader(NamedTuple):
     number: str
     verifiable_requirements: str
     max_point: str
     average_point: str
+    percentage_of_completion: str
+
+
+class ResultTableHaders(NamedTuple):
+    number: str
+    class_name: str
+    task_number: str
+    task_name: str
     percentage_of_completion: str
 
 
@@ -62,3 +70,18 @@ class WorksheetRanges:
     average_point: Cell
     average_percentage_of_completion: Cell
     percentage_of_points: LineCells
+
+
+@dataclass
+class OverallResult:
+    number: Cell
+    class_number: Cell
+    task_number: Cell
+    task_name: Cell
+    percentage_of_completion: Cell
+
+
+@dataclass
+class ResultCells:
+    name: str
+    overall_result: List[OverallResult]
