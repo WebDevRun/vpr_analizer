@@ -52,14 +52,10 @@ class RangeConverter:
         )
 
     def get_str_from_line_cells(self, line_cells: LineCells) -> str:
-        start_coordinate = line_cells[0].coordinate
-        end_coordinate = line_cells[-1].coordinate
-        return f"{start_coordinate}:{end_coordinate}"
+        return f"{line_cells[0].coordinate}:{line_cells[-1].coordinate}"
 
     def get_str_from_matrix_cells(self, matrix_cells: MatrixCells) -> str:
-        start_coordinate = matrix_cells[0][0].coordinate
-        end_coordinate = matrix_cells[-1][-1].coordinate
-        return f"{start_coordinate}:{end_coordinate}"
+        return f"{matrix_cells[0][0].coordinate}:{matrix_cells[-1][-1].coordinate}"
 
     def str_to_ranges(self, worksheet_str_ranges: Dict[str, str]) -> WorksheetRanges:
         cell_finder = CellsFinder(self.ws)

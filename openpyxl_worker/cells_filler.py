@@ -13,29 +13,29 @@ class CellsFiller:
         self.ws = ws
 
     def fill_table_header(self, student_cells: LineCells) -> LineCells:
-        cell = self.ws.cell(student_cells[-1].row + 2, 1, THEME_TABLE_HEADERS.number)
-        filled_cells: List[Cell] = [cell]
-        student_formulas = tuple([f"={cell.coordinate}" for cell in student_cells])
+        start_row = student_cells[-1].row + 2
+        start_column = 1
         headers = (
-            THEME_TABLE_HEADERS[1:3]
-            + student_formulas
-            + THEME_TABLE_HEADERS[3 : len(THEME_TABLE_HEADERS)]
+            THEME_TABLE_HEADERS.number,
+            THEME_TABLE_HEADERS[1],
+            THEME_TABLE_HEADERS[2],
+            *[f"={cell.coordinate}" for cell in student_cells],
+            *THEME_TABLE_HEADERS[3:],
         )
-
-        for header in headers:
-            cell = self.ws.cell(cell.row, cell.column + 1, header)
-            filled_cells.append(cell)
-
+        filled_cells = [
+            self.ws.cell(start_row, start_column + index, header)
+            for index, header in enumerate(headers)
+        ]
         return tuple(filled_cells)
 
     def fill_task_numbers(self, task_cells: LineCells, number_cell: Cell) -> LineCells:
         start_cell = self.ws.cell(number_cell.row + 1, number_cell.column)
-        filled_cells: List[Cell] = []
-
-        for index, task_cell in enumerate(task_cells):
-            cell_formula = f"={task_cell.coordinate}"
-            cell = self.ws.cell(start_cell.row + index, start_cell.column, cell_formula)
-            filled_cells.append(cell)
+        filled_cells = [
+            self.ws.cell(
+                start_cell.row + index, start_cell.column, f"={cell.coordinate}"
+            )
+            for index, cell in enumerate(task_cells)
+        ]
         return tuple(filled_cells)
 
     def fill_point_formulas(
@@ -46,16 +46,12 @@ class CellsFiller:
         for index, point_cell_row in enumerate(point_cells):
             column = student_cells[index].column
             start_row = student_cells[index].row + 1
-            filled_row = []
-
-            for index, point_cell in enumerate(point_cell_row):
-                cell_formula = f"={point_cell.coordinate}"
-                cell = self.ws.cell(start_row + index, column, cell_formula)
-                filled_row.append(cell)
-
-            filled_cells.append(tuple(filled_row))
-
-            column += 1
+            filled_cells.append(
+                tuple(
+                    self.ws.cell(start_row + j, column, f"={point_cell.coordinate}")
+                    for j, point_cell in enumerate(point_cell_row)
+                )
+            )
 
         return tuple(filled_cells)
 
@@ -66,11 +62,9 @@ class CellsFiller:
         start_row = average_cell.row + 1
         filled_cells: List[Cell] = []
 
-        for index, cell in enumerate(point_cells[0]):
-            start_cell_coordinate = f"{cell.column_letter }{cell.row}"
-            last_cell = point_cells[-1][index]
-            end_cell_coordinate = f"{last_cell.column_letter}{last_cell.row}"
-            cell_formula = f"=AVERAGE({start_cell_coordinate}:{end_cell_coordinate})"
+        for index, start_cell in enumerate(point_cells[0]):
+            end_cell = point_cells[-1][index]
+            cell_formula = f"=AVERAGE({start_cell.coordinate}:{end_cell.coordinate})"
             cell = self.ws.cell(start_row + index, column, cell_formula)
             filled_cells.append(cell)
 
@@ -127,27 +121,26 @@ class CellsFiller:
 
     def fill_average_percentage_of_completion(
         self,
-        sum_student_point_formulas: Tuple[Cell, ...],
-        sum_max_point_formula: Cell,
-        last_percentage_of_completion_formula: Cell,
+        sum_student_point: Tuple[Cell, ...],
+        sum_max_point: Cell,
+        last_percentage_of_completion: Cell,
     ):
-        row = last_percentage_of_completion_formula.row + 1
-        column = last_percentage_of_completion_formula.column
+        row = last_percentage_of_completion.row + 1
+        column = last_percentage_of_completion.column
         cell = self.ws.cell(row, column)
-        average_chunk = f"=AVERAGE({sum_student_point_formulas[0].coordinate}:{sum_student_point_formulas[-1].coordinate})"
-        cell.value = f"{average_chunk}/{sum_max_point_formula.coordinate}"
+        average_chunk = f"=AVERAGE({sum_student_point[0].coordinate}:{sum_student_point[-1].coordinate})"
+        cell.value = f"{average_chunk}/{sum_max_point.coordinate}"
         return cell
 
     def fill_percentage_of_point(
-        self, sum_student_point_formula: Tuple[Cell, ...], sum_max_point_formula: Cell
+        self, sum_student_point: Tuple[Cell, ...], sum_max_point: Cell
     ):
-        filled_cell: List[Cell] = []
-
-        for cell in sum_student_point_formula:
-            percent_cell = self.ws.cell(cell.row + 1, cell.column)
-            percent_cell.value = (
-                f"={cell.coordinate}/{sum_max_point_formula.coordinate}"
+        filled_cells = (
+            self.ws.cell(
+                cell.row + 1,
+                cell.column,
+                f"={cell.coordinate}/{sum_max_point.coordinate}",
             )
-            filled_cell.append(percent_cell)
-
-        return tuple(filled_cell)
+            for cell in sum_student_point
+        )
+        return tuple(filled_cells)

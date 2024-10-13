@@ -26,10 +26,12 @@ class TableWorker:
         return self
 
     def replace_x_cells(self, cell_range: Range):
-        selected_cell_range = self.cells_finder.getCells(cell_range)
+        start_cell = self.ws[cell_range.start]
+        end_cell = self.ws[cell_range.end]
 
-        for cell_row in selected_cell_range:
-            for cell in cell_row:
+        for row in range(start_cell.row, end_cell.row + 1):
+            for col in range(start_cell.column, end_cell.column + 1):
+                cell = self.ws.cell(row=row, column=col)
                 if cell.value in REPLACE_VALUES:
                     cell.value = 0
 
