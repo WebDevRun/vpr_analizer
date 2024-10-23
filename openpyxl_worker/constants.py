@@ -1,4 +1,4 @@
-from openpyxl_worker.types import ResultTableHaders, TableHeader
+from openpyxl_worker.types import ResultTableHeaders, TableHeader
 
 THEME_TABLE_HEADERS = TableHeader(
     "№",
@@ -10,7 +10,7 @@ THEME_TABLE_HEADERS = TableHeader(
 
 REPLACE_VALUES = ("x", "X", "х", "Х")
 
-THEME_RESULT_TABLE_HEADERS = ResultTableHaders(
+THEME_RESULT_TABLE_HEADERS = ResultTableHeaders(
     "№",
     "Класс",
     "Номер задания",

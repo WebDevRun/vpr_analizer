@@ -9,7 +9,7 @@ from yaml_worker.types import WorksheetStrRanges
 
 
 class RangeConverter:
-    SPLIT_SIMBOL = ":"
+    SPLIT_SYMBOL = ":"
 
     def __init__(self, ws: Worksheet) -> None:
         self.ws = ws
@@ -59,37 +59,37 @@ class RangeConverter:
 
     def str_to_ranges(self, worksheet_str_ranges: Dict[str, str]) -> WorksheetRanges:
         cell_finder = CellsFinder(self.ws)
-        coordinate = worksheet_str_ranges["table_headers"].split(self.SPLIT_SIMBOL)
-        table_headers = cell_finder.getCells(Range(coordinate[0], coordinate[-1]))
-        coordinate = worksheet_str_ranges["task_formulas"].split(self.SPLIT_SIMBOL)
-        task_formulas = cell_finder.getCells(Range(coordinate[0], coordinate[-1]))
+        coordinate = worksheet_str_ranges["table_headers"].split(self.SPLIT_SYMBOL)
+        table_headers = cell_finder.get_cells(Range(coordinate[0], coordinate[-1]))
+        coordinate = worksheet_str_ranges["task_formulas"].split(self.SPLIT_SYMBOL)
+        task_formulas = cell_finder.get_cells(Range(coordinate[0], coordinate[-1]))
         task_formulas = tuple([row[0] for row in task_formulas])
-        coordinate = worksheet_str_ranges["student_formulas"].split(self.SPLIT_SIMBOL)
-        student_formulas = cell_finder.getCells(Range(coordinate[0], coordinate[-1]))
-        coordinate = worksheet_str_ranges["student_formulas"].split(self.SPLIT_SIMBOL)
-        point_formulas = cell_finder.getCells(Range(coordinate[0], coordinate[-1]))
-        coordinate = worksheet_str_ranges["average_formulas"].split(self.SPLIT_SIMBOL)
-        average_formulas = cell_finder.getCells(Range(coordinate[0], coordinate[-1]))
+        coordinate = worksheet_str_ranges["student_formulas"].split(self.SPLIT_SYMBOL)
+        student_formulas = cell_finder.get_cells(Range(coordinate[0], coordinate[-1]))
+        coordinate = worksheet_str_ranges["student_formulas"].split(self.SPLIT_SYMBOL)
+        point_formulas = cell_finder.get_cells(Range(coordinate[0], coordinate[-1]))
+        coordinate = worksheet_str_ranges["average_formulas"].split(self.SPLIT_SYMBOL)
+        average_formulas = cell_finder.get_cells(Range(coordinate[0], coordinate[-1]))
         average_formulas = tuple([row[0] for row in average_formulas])
         coordinate = worksheet_str_ranges["percentage_of_completion_formulas"].split(
-            self.SPLIT_SIMBOL
+            self.SPLIT_SYMBOL
         )
-        percentage_of_completion_formulas = cell_finder.getCells(
+        percentage_of_completion_formulas = cell_finder.get_cells(
             Range(coordinate[0], coordinate[-1])
         )
         percentage_of_completion_formulas = tuple(
             [row[0] for row in percentage_of_completion_formulas]
         )
-        coordinate = worksheet_str_ranges["max_point_cells"].split(self.SPLIT_SIMBOL)
-        max_point_cells = cell_finder.getCells(Range(coordinate[0], coordinate[-1]))
+        coordinate = worksheet_str_ranges["max_point_cells"].split(self.SPLIT_SYMBOL)
+        max_point_cells = cell_finder.get_cells(Range(coordinate[0], coordinate[-1]))
         max_point_cells = tuple([row[0] for row in max_point_cells])
         sum_max_point_formula: Cell = self.ws[
             worksheet_str_ranges["sum_max_point_formula"]
         ]
         coordinate = worksheet_str_ranges["sum_student_point_formulas"].split(
-            self.SPLIT_SIMBOL
+            self.SPLIT_SYMBOL
         )
-        sum_student_point_formulas = cell_finder.getCells(
+        sum_student_point_formulas = cell_finder.get_cells(
             Range(coordinate[0], coordinate[-1])
         )
         average_point: Cell = self.ws[worksheet_str_ranges["average_point"]]
@@ -97,9 +97,9 @@ class RangeConverter:
             worksheet_str_ranges["average_percentage_of_completion"]
         ]
         coordinate = worksheet_str_ranges["percentage_of_points"].split(
-            self.SPLIT_SIMBOL
+            self.SPLIT_SYMBOL
         )
-        percentage_of_points = cell_finder.getCells(
+        percentage_of_points = cell_finder.get_cells(
             Range(coordinate[0], coordinate[-1])
         )
 

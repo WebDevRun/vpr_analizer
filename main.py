@@ -29,13 +29,13 @@ def main():
     args = ArgParser().get_args()
 
     if args.paint:
-        table_config_path = Path(Directory.config.value, "table_ranges.yaml")
+        table_config_path = Path(Directory.config, "table_ranges.yaml")
         with open(table_config_path, "r", encoding="utf-8") as file:
             yaml = safe_load(file)
 
         for wb in yaml.get("workbooks"):
             table_name = wb.get("name")
-            table_path = Path(Directory.tables.value, table_name)
+            table_path = Path(Directory.tables, table_name)
             table_worker = TableWorker(table_path)
 
             for worksheet in wb.get("worksheets"):
@@ -44,13 +44,13 @@ def main():
                 ranges = RangeConverter(table_worker.ws).str_to_ranges(worksheet)
                 table_worker.paint_worksheet(ranges)
                 print(
-                    f"{Sentences.conditional_formatting.value} {table_name} - {ws_name}"
+                    f"{Sentences.conditional_formatting} {table_name} - {ws_name}"
                 )
 
             table_worker.save_table(table_path)
-            print(f"{Sentences.save_table.value} {table_path}")
+            print(f"{Sentences.save_table} {table_path}")
 
-        input(Sentences.press_to_close.value)
+        input(Sentences.press_to_close)
         return
 
     table_config_path = Path("tables.yaml")
@@ -60,7 +60,7 @@ def main():
     workbook_list: List[WorkbookRanges] = []
 
     for wb in workbooks:
-        table_path = Path(Directory.tables.value, wb.name)
+        table_path = Path(Directory.tables, wb.name)
         table_worker = TableWorker(table_path)
         wb_ranges: List[WorksheetRanges] = []
         worksheet_list: List[WorksheetStrRanges] = []
@@ -76,22 +76,22 @@ def main():
                 worksheet_ranges
             )
             worksheet_list.append(worksheet_str_ranges)
-            print(f"{Sentences.create_table.value} {wb.name} - {ws.name}")
+            print(f"{Sentences.create_table} {wb.name} - {ws.name}")
 
         workbook_list.append(WorkbookRanges(wb.name, worksheet_list))
 
         OverallResultsWorker(
-            table_worker.wb, Sentences.overall_results.value
+            table_worker.wb, Sentences.overall_results
         ).fill_table(wb_ranges)
         print(
-            f"{Sentences.create_table.value} {wb.name} - {Sentences.overall_results.value}"
+            f"{Sentences.create_table} {wb.name} - {Sentences.overall_results}"
         )
 
         table_worker.save_table(table_path)
-        print(f"{Sentences.save_table.value} {table_path}")
+        print(f"{Sentences.save_table} {table_path}")
 
     yaml_worker.write(WorkbooksRanges(workbook_list))
-    input(Sentences.press_to_close.value)
+    input(Sentences.press_to_close)
 
 
 if __name__ == "__main__":

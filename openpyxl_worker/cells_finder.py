@@ -9,7 +9,7 @@ class CellsFinder:
     def __init__(self, ws: Worksheet) -> None:
         self.ws = ws
 
-    def getCells(self, cell_range: Range) -> MatrixCells:
+    def get_cells(self, cell_range: Range) -> MatrixCells:
         start_cell = self.ws[cell_range.start]
         end_cell = self.ws[cell_range.end]
 

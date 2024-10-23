@@ -22,7 +22,7 @@ class TableHeader(NamedTuple):
     percentage_of_completion: str
 
 
-class ResultTableHaders(NamedTuple):
+class ResultTableHeaders(NamedTuple):
     number: str
     class_name: str
     task_number: str

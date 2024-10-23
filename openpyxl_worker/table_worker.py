@@ -46,7 +46,7 @@ class TableWorker:
     def calculate_values(self, point_range: Range):
         cells_finder = self.cells_finder
         cells_filler = self.cells_filler
-        point_cells = cells_finder.getCells(point_range)
+        point_cells = cells_finder.get_cells(point_range)
         student_cells = cells_finder.find_students(point_cells)
         table_headers = cells_filler.fill_table_header(student_cells)
         task_cells = cells_finder.find_task_cells(point_cells)
