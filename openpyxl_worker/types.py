@@ -8,12 +8,6 @@ LineCells = Tuple[Cell, ...]
 MatrixCells = Tuple[LineCells, ...]
 
 
-class NumberFormatCell(Enum):
-    FORMAT_PERCENTAGE_00 = "0.00%"
-    FORMAT_NUMBER_00 = "0.00"
-    NONE = None
-
-
 class TableHeader(NamedTuple):
     number: str
     verifiable_requirements: str
@@ -25,7 +19,6 @@ class TableHeader(NamedTuple):
 class ResultTableHeaders(NamedTuple):
     number: str
     class_name: str
-    task_number: str
     task_name: str
     percentage_of_completion: str
 
@@ -36,10 +29,10 @@ class Range:
     end: str
 
 
-@dataclass
-class WsData:
-    name: str
-    point_range: Range
+class NumberFormatCell(Enum):
+    FORMAT_PERCENTAGE_00 = "0.00%"
+    FORMAT_NUMBER_00 = "0.00"
+    NONE = None
 
 
 @dataclass
@@ -59,23 +52,20 @@ class FormatArgs:
 class WorksheetRanges:
     name: str
     table_headers: LineCells
-    task_formulas: LineCells
-    student_formulas: LineCells
+    task_cells: LineCells
     point_formulas: MatrixCells
     average_formulas: LineCells
     percentage_of_completion_formulas: LineCells
     max_point_cells: LineCells
-    sum_max_point_formula: Cell
-    sum_student_point_formulas: LineCells
     average_point: Cell
     average_percentage_of_completion: Cell
     percentage_of_points: LineCells
+    task_discription_cells: LineCells
 
 
 @dataclass
 class OverallResult:
     number: Cell
-    class_number: Cell
     task_number: Cell
     task_name: Cell
     percentage_of_completion: Cell
@@ -85,3 +75,31 @@ class OverallResult:
 class ResultCells:
     name: str
     overall_result: List[OverallResult]
+
+
+@dataclass
+class GivenTableCells:
+    point_cells: MatrixCells
+    student_cells: LineCells
+    task_cells: LineCells
+    task_numbers: Tuple[str, ...]
+    max_points: Tuple[int, ...]
+    last_row: int
+
+
+@dataclass
+class FinderCells:
+    student_cells: LineCells
+    task_cells: LineCells
+
+
+@dataclass
+class FilledRows:
+    rows: MatrixCells
+    last_row_number: int
+
+
+@dataclass
+class TaskValues:
+    numbers: Tuple[str, ...]
+    max_points: Tuple[int, ...]

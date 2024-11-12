@@ -1,25 +1,9 @@
 workbooks:
-  - name: русский язык.xlsx
+  - name: base_form.xlsx
     worksheets:
-      - name: 4 класс
-        point_range: C3:V4
-      - name: 5 класс
-        point_range: C3:W9
-      - name: 6 класс
-        point_range: C3:O9
-      - name: 7 класс
-        point_range: C3:R9
-      - name: 8 класс
-        point_range: C3:U5
-  - name: математика.xlsx
-    worksheets:
-      - name: 4 класс
-        point_range: C3:Q4
-      - name: 5 класс
-        point_range: C3:N11
-      - name: 6 класс
-        point_range: C3:O9
-      - name: 7 класс
-        point_range: C3:R9
-      - name: 8 класс
-        point_range: C3:U5
+      - name: Протокол
+        point_range: C2:Q21
+      - name: Протокол_2
+        point_range: C2:Q22
+      - name: Протокол_3
+        point_range: C2:Q24

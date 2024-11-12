@@ -3,24 +3,32 @@ from typing import List
 
 from openpyxl import Workbook
 from openpyxl.formatting.formatting import ConditionalFormattingList
+from openpyxl.formatting.rule import ColorScale, FormatObject, Rule
+from openpyxl.styles import Alignment, Color
 
-from openpyxl_worker.cell_formater import CellFormater
-from openpyxl_worker.cells_finder import CellsFinder
-from openpyxl_worker.constants import THEME_RESULT_TABLE_HEADERS
+from openpyxl_worker.constants import (
+    BRICK_COLOR,
+    LEFT_TOP_ALIGN,
+    LIME_COLOR,
+    THEME_RESULT_TABLE_HEADERS,
+    THIN_BORDER,
+    YELLOW_COLOR,
+)
 from openpyxl_worker.types import (
     FormatArgs,
+    LineCells,
+    MatrixCells,
     OverallResult,
     ResultCells,
     WorksheetRanges,
 )
 
 
-class OverallResultsWorker:
+class SummaryTableWorker:
     NUMBER_COLUMN = 1
-    CLASS_NUMBER = 2
-    TASK_NUMBER_COLUMN = 3
-    THEME_COLUMN = 4
-    POINT_COLUMN = 5
+    TASK_NUMBER_COLUMN = 2
+    THEME_COLUMN = 3
+    POINT_COLUMN = 4
 
     def __init__(self, wb: Workbook, name: str):
         self.wb = wb
@@ -31,10 +39,11 @@ class OverallResultsWorker:
 
         self.ws = self.wb[name]
 
-    def fill_table(self, wb_ranges: List[WorksheetRanges]):
+    def create(self, summary_table_data: List[WorksheetRanges]):
         self.add_header()
-        result_cells = self.calculate_values(wb_ranges)
+        result_cells = self.fill_table(summary_table_data)
         self.format_ws(result_cells)
+        self.add_filter()
 
     def add_header(self):
         start_row = 1
@@ -43,19 +52,14 @@ class OverallResultsWorker:
             column = THEME_RESULT_TABLE_HEADERS.index(str) + 1
             self.ws.cell(row=start_row, column=column, value=str)
 
-    def calculate_values(self, wb_ranges: List[WorksheetRanges]):
+    def fill_table(self, summary_table_data: List[WorksheetRanges]):
         start_row = 2
         ws_list: List[OverallResult] = []
 
-        for wb in wb_ranges:
-            for index, cell in enumerate(wb.task_formulas):
+        for wb in summary_table_data:
+            for index, cell in enumerate(wb.task_cells):
                 number = self.ws.cell(
                     row=start_row, column=self.NUMBER_COLUMN, value=start_row - 1
-                )
-                class_number = self.ws.cell(
-                    row=start_row,
-                    column=self.CLASS_NUMBER,
-                    value=wb.name[0],
                 )
                 cell_value = f"='{wb.name}'!{cell.coordinate}"
                 task_number = self.ws.cell(
@@ -78,7 +82,6 @@ class OverallResultsWorker:
                 start_row += 1
                 overall_result = OverallResult(
                     number,
-                    class_number,
                     task_number,
                     task_name,
                     percentage_of_completion,
@@ -88,20 +91,16 @@ class OverallResultsWorker:
         return ResultCells(self.ws.title, ws_list)
 
     def format_ws(self, result_cells: ResultCells):
-        cell_formater = CellFormater()
-        cell_finder = CellsFinder(self.ws)
         self.ws.conditional_formatting = ConditionalFormattingList()
-        number_task_format = FormatArgs(cell_formater.LEFT_TOP_ALIGN)
+        number_task_format = FormatArgs(LEFT_TOP_ALIGN)
         task_number_cells = tuple(
             [cells.task_number for cells in result_cells.overall_result]
         )
-        cells = cell_formater.format_not_point_cells(
-            task_number_cells, number_task_format
-        )
+        cells = self.format_point_cells(task_number_cells, number_task_format)
         horizontal_cells = astuple(result_cells.overall_result[0])
-        table_cells = cell_finder.find_table_cells(horizontal_cells, task_number_cells)
-        cell_formater.set_borders(table_cells)
-        percent_color_rule = cell_formater.generate_percentage_color_rule()
+        table_cells = self.find_table_cells(horizontal_cells, task_number_cells)
+        self.set_borders(table_cells)
+        percent_color_rule = self.generate_percentage_color_rule()
         start_coordinate = result_cells.overall_result[
             0
         ].percentage_of_completion.coordinate
@@ -113,3 +112,57 @@ class OverallResultsWorker:
             percent_color_rule,
         )
         return cells
+
+    def find_table_cells(
+        self,
+        horizontal_cells: LineCells,
+        vertical_cells: LineCells,
+    ):
+        start_column = horizontal_cells[0].column
+        end_column = horizontal_cells[-1].column
+        start_row = horizontal_cells[0].row
+        end_row = vertical_cells[-1].row
+
+        return tuple(
+            self.ws.iter_rows(
+                min_row=start_row,
+                max_row=end_row,
+                min_col=start_column,
+                max_col=end_column,
+            )
+        )
+
+    def format_point_cells(self, cells: LineCells, format_args: FormatArgs):
+        for cell in cells:
+            cell.alignment = Alignment(
+                format_args.alignment.horizontal,
+                format_args.alignment.vertical,
+                wrap_text=format_args.wrap_text,
+            )
+
+            if format_args.number_format.value:
+                cell.number_format = format_args.number_format.value
+
+        return cells
+
+    def set_borders(self, cells: MatrixCells):
+        for row in cells:
+            for cell in row:
+                cell.border = THIN_BORDER
+
+        return cells
+
+    def generate_percentage_color_rule(self):
+        first = FormatObject(type="num", val=0)
+        mid = FormatObject(type="num", val=0.5)
+        last = FormatObject(type="num", val=1)
+        colors = [
+            Color(BRICK_COLOR),
+            Color(YELLOW_COLOR),
+            Color(LIME_COLOR),
+        ]
+        color_scale = ColorScale(cfvo=[first, mid, last], color=colors)
+        return Rule(type="colorScale", colorScale=color_scale)
+
+    def add_filter(self):
+        self.ws.auto_filter.ref = self.ws.dimensions
