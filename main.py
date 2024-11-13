@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import List
 
 from openpyxl_worker import (
-    AnaliticTableCreater,
+    AnalyticTableCreates,
     GivenTableWorker,
     SummaryTableWorker,
     WorkbookContainer,
@@ -28,7 +28,7 @@ def main():
             given_ranges = GivenTableWorker(
                 wb_data.ws, ws.point_range
             ).get_cell_ranges()
-            worksheet_ranges = AnaliticTableCreater(
+            worksheet_ranges = AnalyticTableCreates(
                 wb_data.wb, wb_data.ws, given_ranges
             ).create()
             summary_table_data.append(worksheet_ranges)

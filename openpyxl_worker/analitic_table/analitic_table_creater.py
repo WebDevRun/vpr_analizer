@@ -26,7 +26,7 @@ from openpyxl_worker.types import (
 )
 
 
-class AnaliticTableCreater:
+class AnalyticTableCreates:
     def __init__(self, wb: Workbook, ws: Worksheet, ranges: GivenTableCells) -> None:
         self.wb = wb
         self.ws = ws
@@ -43,7 +43,7 @@ class AnaliticTableCreater:
             self.ranges.student_cells, self.ranges.last_row
         )
         task_cells = self.fill_task_numbers(self.ranges.task_numbers, table_headers[0])
-        task_discription_cells = self.find_task_descriptions(
+        task_description_cells = self.find_task_descriptions(
             task_cells, table_headers[1]
         )
         max_point_cells = self.fill_max_points(self.ranges.max_points, table_headers[2])
@@ -79,7 +79,7 @@ class AnaliticTableCreater:
             average_point,
             average_percentage_of_completion,
             percentage_of_points,
-            task_discription_cells,
+            task_description_cells,
         )
 
     def fill_table_header(self, student_cells: LineCells, last_row: int) -> LineCells:
@@ -366,8 +366,10 @@ class AnaliticTableCreater:
         )
 
         for index, cell in enumerate(worksheet_ranges.max_point_cells):
-            if type(cell.value) is int:
-                point_color_rule = self.generate_point_color_rule(cell.value)
+            if type(cell.value) is not int:
+                raise ValueError("Cell value is not integer")
+
+            point_color_rule = self.generate_point_color_rule(cell.value)
             row = cell.row
             start_column = cell.column + 1
             end_column = worksheet_ranges.average_formulas[index].column - 1
