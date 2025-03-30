@@ -3,7 +3,3 @@ workbooks:
     worksheets:
       - name: Протокол
         point_range: C2:Q21
-      - name: Протокол_2
-        point_range: C2:Q22
-      - name: Протокол_3
-        point_range: C2:Q24

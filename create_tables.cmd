@@ -1,1 +1,2 @@
-.\venv\Scripts\activate && python main.py && deactivate
+mkdir tables
+uv run main.py

@@ -1,0 +1,11 @@
+[project]
+name = "vpr-analizer"
+version = "0.1.0"
+description = "Update xlsx files. Add new infomation"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "et-xmlfile==1.1.0",
+    "openpyxl==3.1.5",
+    "pyyaml==6.0.2",
+]
