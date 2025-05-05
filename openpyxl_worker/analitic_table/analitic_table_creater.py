@@ -27,18 +27,29 @@ from openpyxl_worker.types import (
 
 
 class AnalyticTableCreates:
-    def __init__(self, wb: Workbook, ws: Worksheet, ranges: GivenTableCells) -> None:
-        self.wb = wb
-        self.ws = ws
-        self.ranges = ranges
+    """Class for creating and formatting analytic tables in Excel workbooks."""
 
-    def create(self):
+    def __init__(self, wb: Workbook, ws: Worksheet, ranges: GivenTableCells) -> None:
+        """Initialize AnalyticTableCreates.
+
+        Args:
+            wb (Workbook): The workbook to work with.
+            ws (Worksheet): The worksheet to work with.
+            ranges (GivenTableCells): The cell ranges and values for the table.
+        """
+        self.wb: Workbook = wb
+        self.ws: Worksheet = ws
+        self.ranges: GivenTableCells = ranges
+
+    def create(self) -> WorksheetRanges:
+        """Create and format the analytic table, returning worksheet ranges."""
         worksheet_ranges = self.create_table()
         self.format_worksheet(worksheet_ranges)
         self.paint_worksheet(worksheet_ranges)
         return worksheet_ranges
 
     def create_table(self) -> WorksheetRanges:
+        """Create the table and return worksheet ranges. (Implementation omitted for brevity)"""
         table_headers = self.fill_table_header(
             self.ranges.student_cells, self.ranges.last_row
         )
@@ -230,7 +241,9 @@ class AnalyticTableCreates:
         return cell
 
     def fill_percentage_of_point(
-        self, sum_student_point: Tuple[Cell, ...], sum_max_point: Cell
+        self,
+        sum_student_point: Tuple[Cell, ...],
+        sum_max_point: Cell,
     ):
         filled_cells = (
             self.ws.cell(
@@ -242,7 +255,8 @@ class AnalyticTableCreates:
         )
         return tuple(filled_cells)
 
-    def format_worksheet(self, worksheet_ranges: WorksheetRanges):
+    def format_worksheet(self, worksheet_ranges: WorksheetRanges) -> None:
+        """Format the worksheet with borders, alignment, and number formats."""
         table_header_format = FormatArgs(LEFT_TOP_ALIGN, wrap_text=True)
         number_formula_format = FormatArgs(LEFT_TOP_ALIGN)
         point_formula_format = FormatArgs(RIGHT_TOP_ALIGN)
@@ -278,33 +292,37 @@ class AnalyticTableCreates:
         )
         self.set_borders(table_cells)
 
-    def format_not_point_cells(self, cells: Tuple[Cell, ...], format_args: FormatArgs):
+    def format_not_point_cells(
+        self, cells: Tuple[Cell, ...], format_args: FormatArgs
+    ) -> Tuple[Cell, ...]:
+        """Format non-point cells with alignment and number format."""
         for cell in cells:
             cell.alignment = Alignment(
                 format_args.alignment.horizontal,
                 format_args.alignment.vertical,
                 wrap_text=format_args.wrap_text,
             )
-
             if format_args.number_format.value:
                 cell.number_format = format_args.number_format.value
-
         return cells
 
-    def format_point_cells(self, cells: MatrixCells, format_args: FormatArgs):
+    def format_point_cells(
+        self, cells: MatrixCells, format_args: FormatArgs
+    ) -> MatrixCells:
+        """Format point cells in a matrix with alignment and number format."""
         for row in cells:
             self.format_not_point_cells(row, format_args)
-
         return cells
 
-    def set_borders(self, cells: MatrixCells):
+    def set_borders(self, cells: MatrixCells) -> MatrixCells:
+        """Set thin borders for all cells in the matrix."""
         for row in cells:
             for cell in row:
                 cell.border = THIN_BORDER
-
         return cells
 
-    def generate_percentage_color_rule(self):
+    def generate_percentage_color_rule(self) -> Rule:
+        """Generate a color scale rule for percentage formatting."""
         first = FormatObject(type="num", val=0)
         mid = FormatObject(type="num", val=0.5)
         last = FormatObject(type="num", val=1)
@@ -316,7 +334,8 @@ class AnalyticTableCreates:
         color_scale = ColorScale(cfvo=[first, mid, last], color=colors)
         return Rule(type="colorScale", colorScale=color_scale)
 
-    def generate_point_color_rule(self, max_point: int):
+    def generate_point_color_rule(self, max_point: int) -> Rule:
+        """Generate a color scale rule for point formatting based on max point."""
         first = FormatObject(type="num", val=0)
         mid = FormatObject(type="num", val=max_point / 2)
         last = FormatObject(type="num", val=max_point)
@@ -347,7 +366,8 @@ class AnalyticTableCreates:
             )
         )
 
-    def paint_worksheet(self, worksheet_ranges: WorksheetRanges):
+    def paint_worksheet(self, worksheet_ranges: WorksheetRanges) -> None:
+        """Apply color formatting to the worksheet."""
         self.ws.conditional_formatting = ConditionalFormattingList()
         percent_color_rule = self.generate_percentage_color_rule()
         start_coordinate = worksheet_ranges.percentage_of_points[0].coordinate

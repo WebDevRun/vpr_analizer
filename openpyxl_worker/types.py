@@ -9,6 +9,8 @@ MatrixCells = Tuple[LineCells, ...]
 
 
 class TableHeader(NamedTuple):
+    """Named tuple for table header fields."""
+
     number: str
     verifiable_requirements: str
     max_point: str
@@ -17,6 +19,8 @@ class TableHeader(NamedTuple):
 
 
 class ResultTableHeaders(NamedTuple):
+    """Named tuple for result table header fields."""
+
     number: str
     class_name: str
     task_name: str
@@ -25,6 +29,8 @@ class ResultTableHeaders(NamedTuple):
 
 @dataclass
 class Range:
+    """Represents a cell range with start and end cell references."""
+
     start: str
     end: str
 
@@ -37,12 +43,16 @@ class NumberFormatCell(Enum):
 
 @dataclass
 class AlignmentCell:
+    """Represents cell alignment options for Excel cells."""
+
     horizontal: Literal["right", "center", "left"]
     vertical: Literal["top", "center", "bottom"]
 
 
 @dataclass
 class FormatArgs:
+    """Arguments for formatting Excel cells."""
+
     alignment: AlignmentCell
     number_format: NumberFormatCell = NumberFormatCell.NONE
     wrap_text: bool = False
@@ -50,6 +60,8 @@ class FormatArgs:
 
 @dataclass
 class WorksheetRanges:
+    """Represents all relevant cell ranges for a worksheet."""
+
     name: str
     table_headers: LineCells
     task_cells: LineCells
@@ -65,6 +77,8 @@ class WorksheetRanges:
 
 @dataclass
 class OverallResult:
+    """Represents a row in the summary table with all relevant cells."""
+
     number: Cell
     task_number: Cell
     task_name: Cell
@@ -73,12 +87,16 @@ class OverallResult:
 
 @dataclass
 class ResultCells:
+    """Represents all result rows for a summary table."""
+
     name: str
     overall_result: List[OverallResult]
 
 
 @dataclass
 class GivenTableCells:
+    """Represents all relevant cell ranges and values for a given table."""
+
     point_cells: MatrixCells
     student_cells: LineCells
     task_cells: LineCells
@@ -89,17 +107,23 @@ class GivenTableCells:
 
 @dataclass
 class FinderCells:
+    """Represents found student and task cells for a matrix."""
+
     student_cells: LineCells
     task_cells: LineCells
 
 
 @dataclass
 class FilledRows:
+    """Represents filled rows and the last row number in a worksheet."""
+
     rows: MatrixCells
     last_row_number: int
 
 
 @dataclass
 class TaskValues:
+    """Represents extracted task numbers and max points from task cells."""
+
     numbers: Tuple[str, ...]
     max_points: Tuple[int, ...]
