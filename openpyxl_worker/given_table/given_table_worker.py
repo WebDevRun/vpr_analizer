@@ -16,6 +16,9 @@ from openpyxl_worker.types import (
 
 
 class GivenTableWorker:
+    OPEN_SCORE = "("
+    VARIANT = "вариант"
+
     def __init__(self, ws: Worksheet, point_range: Range) -> None:
         self.ws = ws
         self.point_range = point_range
@@ -23,6 +26,7 @@ class GivenTableWorker:
     def get_cell_ranges(self) -> GivenTableCells:
         filled_rows = self.select_filled_rows(self.point_range)
         point_cells = self.replace_x_cells(filled_rows.rows)
+        point_cells = self.skip_variant_cells(point_cells)
         cells = self.cell_range_finder(filled_rows.rows)
         task_values = self.select_task_values(cells.task_cells)
         return GivenTableCells(
@@ -61,6 +65,25 @@ class GivenTableWorker:
 
         return cell_range
 
+    def skip_variant_cells(self, cell_range: MatrixCells) -> MatrixCells:
+        matrix_cells: List[Tuple[Cell, ...]] = []
+
+        for row in cell_range:
+            row_cells: List[Cell] = []
+
+            for cell in row:
+                cell_column = cell.column
+                header_cell = self.ws.cell(row=1, column=cell_column)
+
+                if self.VARIANT in header_cell.value.lower():
+                    continue
+
+                row_cells.append(cell)
+
+            matrix_cells.append(tuple(row_cells))
+
+        return tuple(matrix_cells)
+
     def find_student_cells(self, point_cells: MatrixCells) -> LineCells:
         student_cells = [self.ws.cell(row=row[0].row, column=1) for row in point_cells]
         return tuple(student_cells)
@@ -84,11 +107,13 @@ class GivenTableWorker:
 
         for cell in cell_range:
             if type(cell.value) is str:
-                number, max_score = cell.value.split(" ")
+                if self.VARIANT in cell.value.lower():
+                    continue
+                strip_str = cell.value.strip()
+                score_index = strip_str.index(self.OPEN_SCORE)
+                number = strip_str[:score_index]
+                max_score = strip_str[score_index + 1 : -2]
                 numbers.append(number)
-                max_score = max_score[1:-2]
                 max_scores.append(int(max_score))
-            else:
-                raise ValueError("Cell value is not a string")
 
         return TaskValues(tuple(numbers), tuple(max_scores))
