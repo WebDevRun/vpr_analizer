@@ -2,4 +2,6 @@ workbooks:
   - name: base_form.xlsx
     worksheets:
       - name: Протокол
+        point_range: C2:R21
+      - name: Протокол_2
         point_range: C2:Q21
